@@ -47,11 +47,15 @@ namespace pk3DS
 
             return bmp;
         }
-        internal static Bitmap getSprite(int species, int form, int gender, int item)
+        internal static Bitmap getSprite(int species, int form, int gender, int item, bool shiny = false)
         {
             string file;
-            if (species == 0)
+            if (species == 0) // fix with SM release
             { return (Bitmap)Properties.Resources.ResourceManager.GetObject("_0"); }
+            if (species > 802)
+            {
+                return (Bitmap)Properties.Resources.unknown;
+            }
             {
                 file = "_" + species;
                 if (form > 0) // Alt Form Handling
@@ -66,7 +70,7 @@ namespace pk3DS
             Bitmap baseImage = (Bitmap)Properties.Resources.ResourceManager.GetObject(file);
             if (baseImage == null)
             {
-                if (species < 722)
+                if (species < Main.Config.MaxSpeciesID)
                 {
                     baseImage = LayerImage(
                         (Image)Properties.Resources.ResourceManager.GetObject("_" + species),
@@ -75,6 +79,11 @@ namespace pk3DS
                 }
                 else
                     baseImage = Properties.Resources.unknown;
+            }
+            if (shiny)
+            {
+                // Add shiny star to top left of image.
+                baseImage = Util.LayerImage(baseImage, Properties.Resources.rare_icon, 0, 0, 0.7);
             }
             if (item > 0)
             {
@@ -170,27 +179,13 @@ namespace pk3DS
         }
         internal static int ToInt32(string value)
         {
-            value = value.Replace(" ", "");
-            if (string.IsNullOrEmpty(value))
-                return 0;
-            try
-            {
-                value = value.TrimEnd('_');
-                return int.Parse(value);
-            }
-            catch { return 0; }
+            string val = value?.Replace(" ", "").Replace("_", "").Trim();
+            return string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val);
         }
         internal static uint ToUInt32(string value)
         {
-            value = value.Replace(" ", "");
-            if (string.IsNullOrEmpty(value))
-                return 0;
-            try
-            {
-                value = value.TrimEnd('_');
-                return uint.Parse(value);
-            }
-            catch { return 0; }
+            string val = value?.Replace(" ", "").Replace("_", "").Trim();
+            return string.IsNullOrWhiteSpace(val) ? 0 : uint.Parse(val);
         }
         internal static uint getHEXval(TextBox tb)
         {
