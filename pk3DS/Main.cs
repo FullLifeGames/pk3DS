@@ -252,6 +252,9 @@ namespace pk3DS
                     romfs = new Control[] {B_GameText, B_StoryText, B_Personal, B_Evolution, B_LevelUp, B_Wild, B_MegaEvo, B_EggMove, B_Trainer, B_Item, B_Move, };
                     exefs = new Control[] {B_TMHM, B_TypeChart};
                     cro = new Control[] {B_Mart};
+
+                    if (Config.Version != GameVersion.SMDEMO)
+                        romfs = romfs.Concat(new[] {B_Static}).ToArray();
                     break;
                 default:
                     romfs = exefs = cro = new Control[] {new Label {Text = "No editors available."}};
@@ -526,17 +529,35 @@ namespace pk3DS
                         else if (Config.XY)
                             action = () => new XYWE().ShowDialog();
                         else return;
+
+                        fileGet(files, false);
+                        Invoke(action);
+                        fileSet(files);
                         break;
                     case 7:
+                        Invoke((MethodInvoker)delegate { Enabled = false; });
+                        threads++;
+
                         files = new [] { "encdata", "zonedata", "worlddata" };
-                        action = () => new SMWE().ShowDialog();
+                        updateStatus($"GARC Get: {files[0]}... ");
+                        var ed = Config.getlzGARCData(files[0]);
+                        updateStatus($"GARC Get: {files[1]}... ");
+                        var zd = Config.getlzGARCData(files[1]);
+                        updateStatus($"GARC Get: {files[2]}... ");
+                        var wd = Config.getlzGARCData(files[2]);
+                        updateStatus("Running SMWE... ");
+                        action = () => new SMWE(ed, zd, wd).ShowDialog();
+                        Invoke(action);
+
+                        updateStatus($"GARC Set: {files[0]}... ");
+                        ed.Save();
+                        resetStatus();
+                        threads--;
+                        Invoke((MethodInvoker)delegate { Enabled = true; });
                         break;
                     default:
                         return;
                 }
-                fileGet(files, false);
-                Invoke(action);
-                fileSet(files);
             }).Start();
         }
         private void B_OWSE_Click(object sender, EventArgs e)
@@ -880,6 +901,21 @@ namespace pk3DS
         private void B_Static_Click(object sender, EventArgs e)
         {
             if (threadActive()) return;
+
+            if (Config.Generation == 7)
+            {
+                new Thread(() =>
+                {
+                    var esg = Config.getGARCData("encounterstatic");
+                    byte[][] es = esg.Files;
+                    
+                    Invoke((Action)(() => new StaticEncounterEditor7(es).ShowDialog()));
+                    esg.Files = es;
+                    esg.Save();
+                }).Start();
+                return;
+            }
+
             if (DialogResult.Yes != Util.Prompt(MessageBoxButtons.YesNo,
                 "CRO Editing causes crashes if you do not patch the RO module.", "Continue anyway?"))
                 return;
