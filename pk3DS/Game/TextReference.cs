@@ -20,7 +20,9 @@
         metlist_000000,
         OPowerFlavor,
         MaisonTrainerNames,
-        SuperTrainerNames
+        SuperTrainerNames,
+        BattleRoyalNames,
+        BattleTreeNames,
     }
     public class TextReference
     {
@@ -83,6 +85,7 @@
             new TextReference(050, TextName.TrainerNames),
             new TextReference(051, TextName.TrainerClasses),
             new TextReference(052, TextName.Types),
+            new TextReference(054, TextName.MoveFlavor),
             new TextReference(055, TextName.MoveNames),
         };
         public static readonly TextReference[] GameText_SM =
@@ -91,12 +94,15 @@
             new TextReference(036, TextName.ItemNames),
             new TextReference(055, TextName.SpeciesNames),
             new TextReference(067, TextName.metlist_000000),
+            new TextReference(086, TextName.BattleRoyalNames),
             new TextReference(087, TextName.Natures),
             new TextReference(096, TextName.AbilityNames),
+            new TextReference(099, TextName.BattleTreeNames),
             new TextReference(104, TextName.TrainerText),
             new TextReference(105, TextName.TrainerNames),
             new TextReference(106, TextName.TrainerClasses),
             new TextReference(107, TextName.Types),
+            new TextReference(112, TextName.MoveFlavor), 
             new TextReference(113, TextName.MoveNames),
             new TextReference(114, TextName.Forms)
         };

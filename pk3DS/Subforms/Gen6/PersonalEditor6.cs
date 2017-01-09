@@ -309,7 +309,7 @@ namespace pk3DS
             decimal w; decimal.TryParse(TB_Weight.Text, out w);
             pkm.Height = (int)(h * 100);
             pkm.Weight = (int)(w * 10);
-
+            
             for (int i = 0; i < CLB_TMHM.Items.Count; i++)
                 pkm.TMHM[i] = CLB_TMHM.GetItemChecked(i);
 
